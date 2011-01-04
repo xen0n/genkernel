@@ -879,6 +879,13 @@ sdelay() {
 	if [ -n "${SDELAY}" ]
 	then
 		sleep ${SDELAY}
+	elif [ "${CDROOT}" = '1' ]
+	then
+		# many CD/DVD drives require extra sleep, especially when
+		# connected via USB. Many people reported that 1 second sleep
+		# is not enough on their notebooks, that's why sleep 3, when booting
+		# off a livecd is a better default.
+		sleep 3
 	else
 		sleep 1
 	fi

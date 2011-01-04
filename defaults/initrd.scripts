@@ -411,10 +411,16 @@ setup_hotplug() {
 }
 
 check_slowusb() {
+	local usb_storage_dir="/sys/bus/usb/drivers/usb-storage"
+	if [ ! -d "${usb_storage_dir}" ]
+	then
+		return
+	fi
 	[ "${DO_slowusb}" ] || \
-	for dir in /sys/bus/usb/drivers/usb-storage/*
+	for x in "${usb_storage_dir}"/*
 	do
-		[ -d "${dir}" ] && FORCE_slowusb="1"
+		[ -d "${x}" ]  && [ "${x}" != "${usb_storage_dir}/module" ] \
+			&& FORCE_slowusb="1"
 	done
 }
 
@@ -422,9 +428,7 @@ start_dev_mgr() {
 	if [ "${KV_2_6_OR_GREATER}" ]
 	then
 		cd /sys
-		[ "${DO_slowusb}" ] && sdelay
 		check_slowusb
-		[ "${FORCE_slowusb}" ] && sdelay
 		good_msg 'Activating mdev'
 		runmdev
 		[ "${DO_slowusb}" ] || \

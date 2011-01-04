@@ -699,10 +699,6 @@ then
 	export CDBOOT
 	CDBOOT=1
 	check_slowusb
-	if [ "${DO_slowusb}" ] || [ "${FORCE_slowusb}" ]
-	then
-		sleep 10
-	fi
 else
 	if [ "${USE_UNIONFS_NORMAL}" = '1' ]
 	then

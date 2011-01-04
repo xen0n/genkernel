@@ -218,6 +218,8 @@ do
 		keymap\=*)
 			keymap=`parse_opt "${x}"`
 		;;
+		aufs)
+			USE_AUFS_NORMAL=1
 		unionfs)
 			if [ ! -x /sbin/unionfs ]
 			then
@@ -630,7 +632,12 @@ then
 	fi
 
 
-	if [ "${USE_UNIONFS_NORMAL}" = '1' ]
+	if [ "${USE_AUFS_NORMAL}" -eq '1' ]
+	then
+		good_msg 'Setting up aufs mounts'
+		setup_aufs
+		CHROOT="${UNION}"
+	elif [ "${USE_UNIONFS_NORMAL}" = '1' ]
 	then
 		setup_unionfs ${NEW_ROOT} ${NEW_ROOT}/${FS_LOCATION}
 		CHROOT=/union
@@ -705,6 +712,11 @@ else
 		mkdir /union_changes
 		mount -t tmpfs tmpfs /union_changes
 		setup_unionfs /union_changes ${NEW_ROOT}
+		mkdir -p ${UNION}/tmp/.initrd
+	fi
+	if [ "${USE_AUFS_NORMAL}" = '1' ]
+	then
+		setup_aufs
 		mkdir -p ${UNION}/tmp/.initrd
 	fi
 fi

@@ -31,6 +31,7 @@ dracut_modules() {
 
 create_initramfs() {
 	local tmprd="${TMPDIR}/initramfs-${KV}" opts='-f -L=3 -M' add_files=()
+    local tmprd="${TMPDIR}/initramfs-${KV}" opts="-f -L=3 -M --${COMP_METHOD}" add_files=()
 
 	print_info 1 'initramfs: >> Initializing Dracut...'
 
@@ -86,9 +87,9 @@ create_initramfs() {
 
 	if isTrue "${INTEGRATED_INITRAMFS}"
 	then
-		mv ${tmprd} ${tmprd}.cpio.gz
+        mv ${tmprd} ${tmprd}.cpio.${COMP_METHOD:-gz}
 		sed -i '/^.*CONFIG_INITRAMFS_SOURCE=.*$/d' ${KERNEL_DIR}/.config
-		echo -e "CONFIG_INITRAMFS_SOURCE=\"${tmprd}.cpio.gz\"\nCONFIG_INITRAMFS_ROOT_UID=0\nCONFIG_INITRAMFS_ROOT_GID=0" \
+		echo -e "CONFIG_INITRAMFS_SOURCE=\"${tmprd}.cpio.${COMP_METHOD:-gz}\"\nCONFIG_INITRAMFS_ROOT_UID=0\nCONFIG_INITRAMFS_ROOT_GID=0" \
 				>> ${KERNEL_DIR}/.config
 	fi
 

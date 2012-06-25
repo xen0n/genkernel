@@ -2,7 +2,7 @@
 # $Id$
 
 BASIC_MODULES=dash\ i18n\ kernel-modules\ resume\ rootfs-block\ terminfo
-BASIC_MODULES+=\ udev-rules\ base
+BASIC_MODULES+=\ udev-rules\ \usrmount\ base\ fs-lib
 MODULES=lvm\ dmraid\ iscsi\ mdraid\ crypt\ crypt-gpg\ multipath\ plymouth\ gensplash
 
 strstr() {

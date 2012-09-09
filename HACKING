@@ -16,7 +16,9 @@ Testing things:
   $ sudo GK_SHARE="$PWD" ./genkernel initramfs --no-install --no-postclear --loglevel=2
 
 Rolling a release:
-- Bump the version in the main genkernel file.
+- Bump the version in...
+  - ./geninitramfs
+  - pygenkernel/cli.py
 - echangelog "Bump version to ${PV}"
 - git commit -a -m "Bump version to ${PV}"
 - make dist

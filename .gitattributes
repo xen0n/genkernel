@@ -4,6 +4,6 @@ ChangeLog ident
 HACKING ident
 README ident
 TODO ident
-genkernel ident
+geninitramfs ident
 *.conf ident
 *.sh ident

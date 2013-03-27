@@ -275,6 +275,9 @@ INITIALIZATION
 *--*[*no-*]*iscsi*::
     Includes or excludes iSCSI support
 
+*--*[*no-*]*hyperv*::
+    Includes or excludes Hyper-V support
+
 *--bootloader*=*grub*::
     Add new kernel to GRUB configuration.
 

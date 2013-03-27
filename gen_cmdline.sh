@@ -101,6 +101,8 @@ longusage() {
   echo "	--no-multipath	Exclude Multipath support"
   echo "	--iscsi			Include iSCSI support"
   echo "	--no-iscsi		Exclude iSCSI support"
+  echo "	--hyperv		Include Hyper-V support"
+  echo "	--no-hyperv		Exclude Hyper-V support"
   echo "	--bootloader=grub	Add new kernel to GRUB configuration"
   echo "	--linuxrc=<file>	Specifies a user created linuxrc"
   echo "	--busybox-config=<file>	Specifies a user created busybox config"
@@ -343,6 +345,10 @@ parse_cmdline() {
 		--iscsi|--no-iscsi)
 			CMD_ISCSI=`parse_optbool "$*"`
 			print_info 2 "CMD_ISCSI: ${CMD_ISCSI}"
+			;;
+		--hyperv|--no-hyperv)
+			CMD_HYPERV=`parse_optbool "$*"`
+			print_info 2 "CMD_HYPERV: ${CMD_HYPERV}"
 			;;
 		--loglevel=*)
 			CMD_LOGLEVEL=`parse_opt "$*"`

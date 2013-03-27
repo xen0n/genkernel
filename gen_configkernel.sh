@@ -142,6 +142,14 @@ config_kernel() {
 		sed -i ${KERNEL_OUTPUTDIR}/.config -e 's/CONFIG_ISCSI_TCP=y/CONFIG_ISCSI_TCP=m/g'
 		sed -i ${KERNEL_OUTPUTDIR}/.config -e 's/CONFIG_SCSI_ISCSI_ATTRS=y/CONFIG_SCSI_ISCSI_ATTRS=m/g'
 	fi
+	# Make sure Hyper-V modules are enabled in the kernel, if --hyperv
+	if isTrue ${CMD_HYPERV}
+	then
+		for v in HYPERV HYPERV_UTILS HYPERV_BALLOON HYPERV_STORAGE HYPERV_NET HID_HYPERV_MOUSE ; do
+			sed -i ${KERNEL_OUTPUTDIR}/.config \
+				-e "s/^(\# )?(CONFIG_$v)( is not set|=y|=m)/\2=m/g"
+		done
+	fi
 
 	if isTrue ${SPLASH}
 	then

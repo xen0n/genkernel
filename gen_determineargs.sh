@@ -114,6 +114,7 @@ determine_real_args() {
 	set_config_with_override BOOL   LVM                  CMD_LVM
 	set_config_with_override BOOL   DMRAID               CMD_DMRAID
 	set_config_with_override BOOL   ISCSI                CMD_ISCSI
+	set_config_with_override BOOL   HYPERV               CMD_HYPERV
 	set_config_with_override BOOL   BUSYBOX              CMD_BUSYBOX              "yes"
 	set_config_with_override BOOL   UNIONFS              CMD_UNIONFS
 	set_config_with_override BOOL   NETBOOT              CMD_NETBOOT

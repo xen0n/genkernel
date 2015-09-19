@@ -1033,39 +1033,21 @@ startVolumes() {
 			bad_msg "Cannot import ZFS pool because /dev/zfs is missing"
 		elif [ -z "${ZFS_POOL}" ]
 		then
-			good_msg "Importing ZFS pools"
-
-			/sbin/zpool import -N -a ${ZPOOL_FORCE}
-
-			if [ "$?" = '0' ]
-			then
-				good_msg "Importing ZFS pools succeeded"
-			else
-				bad_msg "Imported ZFS pools failed"
-			fi
+			bad_msg "Please boot with root=ZFS=\$DATASET"
 		else
-
-			if [ "$(zpool list -H -o name ${ZFS_POOL} 2>&1)" = "$ZFS_POOL" ]
+			mkdir -p /tmp/zfs
+			/sbin/zpool import -f -N -o readonly=on "${ZFS_POOL}"
+			mount -o ro,zfsutil -t zfs "${REAL_ROOT#*=}" /tmp/zfs
+			if [ -e /tmp/zfs/etc/zfs/zpool.cache ]
 			then
-				good_msg "ZFS pool ${ZFS_POOL} already imported."
-
-				if [ -n "${CRYPT_ROOT}" -o -n "${CRYPT_SWAP}" ]
-				then
-					good_msg "LUKS detected. Reimporting ${ZFS_POOL}"
-					/sbin/zpool export -f "${ZFS_POOL}"
-					/sbin/zpool import -N ${ZPOOL_FORCE} "${ZFS_POOL}"
-				fi
+				cp /tmp/zfs/etc/zfs/zpool.cache /tmp/zpool.cache
+				umount /tmp/zfs
+				/sbin/zpool export "${ZFS_POOL}"
+				/sbin/zpool import -c /tmp/zpool.cache -aN
 			else
-				good_msg "Importing ZFS pool ${ZFS_POOL}"
-
-				/sbin/zpool import -N ${ZPOOL_FORCE} "${ZFS_POOL}"
-
-				if [ "$?" = '0' ]
-				then
-					good_msg "Import of ${ZFS_POOL} succeeded"
-				else
-					bad_msg "Import of ${ZFS_POOL} failed"
-				fi
+				umount /tmp/zfs
+				/sbin/zpool export "${ZFS_POOL}"
+				bad_msg "No /etc/zfs/zpool.cache in ${REAL_ROOT#*=}"
 			fi
 		fi
 	fi

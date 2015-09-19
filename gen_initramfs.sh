@@ -445,7 +445,7 @@ append_zfs(){
 	mkdir -p "${TEMP}/initramfs-zfs-temp/etc/zfs"
 
 	# Copy files to /etc/zfs
-	for i in zdev.conf zpool.cache
+	for i in zdev.conf
 	do
 		if [ -f /etc/zfs/${i} ]
 		then

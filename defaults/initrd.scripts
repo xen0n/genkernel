@@ -1034,10 +1034,22 @@ startVolumes() {
 		elif [ -z "${ZFS_POOL}" ]
 		then
 			bad_msg "Please boot with root=ZFS=\$DATASET"
+		# startVolumes is called twice for LUKS assembly.
+		# Devices are not accessed until mount, so become a no-op.
+		# We fall through from the waitForZFS call rather than stopping
+		# sooner so that initramfs archives where the zpool.cache file
+		# has been included are protected against races.
+		elif [ -f /etc/zfs/zpool.cache ]
+		then
+			:
 		elif /sbin/zpool import -f -N -o readonly=on "${ZFS_POOL}" 2>&1 >/dev/null
 		then
 			mkdir -p /tmp/zfs
-			mount -o ro,zfsutil -t zfs "${REAL_ROOT#*=}" /tmp/zfs
+			/sbin/mount.zfs -o ro,zfsutil "${REAL_ROOT#*=}" /tmp/zfs 2>&1 >/dev/null
+			if [ $? -ne 0 ]
+				bad_msg "Failed to mount ${REAL_ROOT#*=}"
+				return 1
+			fi
 
 			# Copy important files to /etc/zfs
 			for i in zpool.cache zdev.conf

@@ -1034,21 +1034,33 @@ startVolumes() {
 		elif [ -z "${ZFS_POOL}" ]
 		then
 			bad_msg "Please boot with root=ZFS=\$DATASET"
-		else
+		elif /sbin/zpool import -f -N -o readonly=on "${ZFS_POOL}" 2>&1 >/dev/null
+		then
 			mkdir -p /tmp/zfs
-			/sbin/zpool import -f -N -o readonly=on "${ZFS_POOL}"
 			mount -o ro,zfsutil -t zfs "${REAL_ROOT#*=}" /tmp/zfs
-			if [ -e /tmp/zfs/etc/zfs/zpool.cache ]
+
+			# Copy important files to /etc/zfs
+			for i in zpool.cache zdev.conf
+			do
+				if [ -f /tmp/zfs/etc/zfs/${i} ]
+				then
+					good_msg "Reading ${i} from ${REAL_ROOT#*=}."
+					cp "/tmp/zfs/etc/zfs/${i}" "/etc/zfs/${i}"
+				fi
+			done
+
+			umount /tmp/zfs
+			/sbin/zpool export -F "${ZFS_POOL}"
+
+			if [ -f /etc/zfs/zpool.cache ]
 			then
-				cp /tmp/zfs/etc/zfs/zpool.cache /tmp/zpool.cache
-				umount /tmp/zfs
-				/sbin/zpool export "${ZFS_POOL}"
-				/sbin/zpool import -c /tmp/zpool.cache -aN
+				/sbin/zpool import -c /etc/zfs/zpool.cache -aN
 			else
-				umount /tmp/zfs
-				/sbin/zpool export "${ZFS_POOL}"
 				bad_msg "No /etc/zfs/zpool.cache in ${REAL_ROOT#*=}"
+
 			fi
+		else
+			bad_msg "Failed to import ${ZFS_POOL}."
 		fi
 	fi
 }

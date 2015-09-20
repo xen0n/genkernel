@@ -442,18 +442,8 @@ append_zfs(){
 		rm -r "${TEMP}/initramfs-zfs-temp"
 	fi
 
+	# Populated during boot
 	mkdir -p "${TEMP}/initramfs-zfs-temp/etc/zfs"
-
-	# Copy files to /etc/zfs
-	for i in zdev.conf
-	do
-		if [ -f /etc/zfs/${i} ]
-		then
-			print_info 1 "        >> Including ${i}"
-			cp -a "/etc/zfs/${i}" "${TEMP}/initramfs-zfs-temp/etc/zfs" 2> /dev/null \
-				|| gen_die "Could not copy file ${i} for ZFS"
-		fi
-	done
 
 	# Copy binaries
 	copy_binaries "${TEMP}/initramfs-zfs-temp" /sbin/{mount.zfs,zdb,zfs,zpool}

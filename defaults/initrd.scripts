@@ -1042,6 +1042,14 @@ startVolumes() {
 		elif [ -f /etc/zfs/zpool.cache ]
 		then
 			:
+		# Depreciated support for dozfs=force
+		elif [ -n "${ZPOOL_FORCE}" ]
+		then
+			/sbin/zpool import -f -N "${ZFS_POOL}" 2>&1 >/dev/null
+			if [ $? -ne 0 ]
+			then
+				bad_msg "Failed to force import ${ZFS_POOL}"
+			fi
 		elif /sbin/zpool import -f -N -o readonly=on "${ZFS_POOL}" 2>&1 >/dev/null
 		then
 			mkdir -p /tmp/zfs

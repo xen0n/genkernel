@@ -1047,6 +1047,7 @@ startVolumes() {
 			mkdir -p /tmp/zfs
 			/sbin/mount.zfs -o ro,zfsutil "${REAL_ROOT#*=}" /tmp/zfs 2>&1 >/dev/null
 			if [ $? -ne 0 ]
+			then
 				bad_msg "Failed to mount ${REAL_ROOT#*=}"
 				return 1
 			fi

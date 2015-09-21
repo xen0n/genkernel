@@ -523,11 +523,27 @@ do
 				fi
 				;;
 			ZFS*)
-				if [ "${USE_ZFS}" = '0' ]; then
+				zpool list -H -o name | grep -q "${ZFS_POOL}"
+				if [ $? -ne 0 ]
+				then
+					if [ ! -e /etc/zfs/zpool.cache ]
+					then
+						bad_msg "${ZFS_POOL} not imported due to missing zpool.cache file."
+
+					else
+						bad_msg "${ZFS_POOL} absent from zpool.cache file."
+					fi
+					bad_msg "Provided that ${ZFS_POOL} exists, you can correct this by:"
+					bad_msg
+					bad_msg "1. Dropping to a shell."
+					bad_msg "2. Running \`zpool import -d /dev/disk/by-id -N ${ZFS_POOL}\`"
+					bad_msg "3. Pressing Cntl+D to exit."
+					bad_msg "4. Running \`zpool set cachefile= ${ZFS_POOL}\` (space after equal sign)"
+					bad_msg "	as root after system has booted."
 					prompt_user "REAL_ROOT" "root block device"
+					got_good_root=0
 					continue
 				fi
-					
 				ROOT_DEV="${REAL_ROOT#*=}"
 				if [ "${ROOT_DEV}" != 'ZFS' ] 
 				then
@@ -543,29 +559,11 @@ do
 						continue
 					fi
 				else
-					BOOTFS=$(/sbin/zpool list -H -o bootfs)
-					if [ "${BOOTFS}" != '-' ]
-					then
-
-						for i in ${BOOTFS}
-						do
-
-							zfs get type ${i} > /dev/null
-							retval=$?
-
-							if [ ${retval} -eq 0 ];	then
-								got_good_root=1
-								REAL_ROOT=${i}
-								ROOTFSTYPE=zfs
-								break
-							fi	
-						
-						done;
-
-					else
-						got_good_root=0
-					fi
-
+					bad_msg "root=ZFS is no longer supported."
+					bad_msg "Please specify root=ZFS=\$DATASET:"
+					prompt_user "REAL_ROOT" "root block device"
+					got_good_root=0
+					continue
 				fi
 
 				if [ ${got_good_root} -ne 1 ]; then

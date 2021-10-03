@@ -559,7 +559,7 @@ append_busybox() {
 	done
 
 	# allow for DNS resolution
-	if isTrue "$(is_glibc)"
+	if isTrue "$(is_glibc)" && ! isTrue "$(is_glibc_2_34_or_later)"
 	then
 		local libdir=$(get_chost_libdir)
 		local libnss_dns="${libdir}/libnss_dns.so"

@@ -239,6 +239,34 @@ is_glibc() {
 	echo "${is_glibc}"
 }
 
+is_glibc_2_34_or_later() {
+	if ! isTrue "$(is_glibc)"; then
+		echo "no"
+		return
+	fi
+
+	local ver="$(getconf GNU_LIBC_VERSION)"
+	ver="${ver##glibc }"
+
+	local ver_major="${ver%%.*}"
+	ver="${ver##${ver_major}.}"
+
+	local ver_minor="${ver%%.*}"
+
+	# Don't bother checking 1.x at all.
+	if [[ $ver_major -gt 2 ]]; then
+		echo "yes"
+		return
+	fi
+
+	if [[ $ver_minor -ge 34 ]]; then
+		echo "yes"
+		return
+	fi
+
+	echo "no"
+}
+
 is_gzipped() {
 	[[ ${#} -ne 1 ]] \
 		&& gen_die "$(get_useful_function_stack "${FUNCNAME}")Invalid usage of ${FUNCNAME}(): Function takes exactly one argument (${#} given)!"

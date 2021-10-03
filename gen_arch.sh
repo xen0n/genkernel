@@ -8,6 +8,9 @@ determine_kernel_arch() {
 
 	KERNEL_ARCH=${ARCH}
 	case ${ARCH} in
+		loongarch*)
+			KERNEL_ARCH=loongarch
+			;;
 		parisc|parisc64)
 			KERNEL_ARCH=parisc
 			;;
